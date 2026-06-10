@@ -233,7 +233,7 @@ Genera una tabla de ratios de aceleración (tiempo QEMU / tiempo RPi3) por algor
 - La versión de OP-TEE utilizada es **4.4.0** con los manifiestos `qemu_v8` y `rpi3`.
 - Las implementaciones de PQClean están incluidas dentro de cada directorio de TA para evitar desfase de versiones.
 - Las 20 repeticiones son un compromiso entre varianza de medida (la Pi no tiene aceleración criptográfica por hardware, así que los tiempos son largos) y tiempo total de experimento. Reducir el número de repeticiones amplía los intervalos de confianza de forma notable, especialmente en keygen de HAWK.
-- Los resultados de QEMU son útiles para comparaciones relativas y para iterar en el desarrollo, pero no deben citarse como cifras absolutas de rendimiento. Todos los tiempos absolutos del trabajo provienen de las mediciones sobre Raspberry Pi 3.
+
 
 ---
 
