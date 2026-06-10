@@ -144,6 +144,59 @@ Las implementaciones criptográficas provienen de [PQClean](https://github.com/P
 
 ---
 
+## Ejemplo de uso completo
+
+Este es el flujo típico desde un build recién compilado hasta tener los resultados
+de los cinco algoritmos en la Raspberry Pi 3.
+
+```bash
+# 1. Clonar y preparar el entorno (solo la primera vez)
+git clone https://github.com/gonncho/pqc2026.git
+cd pqc2026
+source lab/run-pathfixes.sh
+source lab/run-toolchainsinpath.sh
+
+# 2. Descargar toolchains y compilar para RPi3
+make -C laboratorio/optee/build PLATFORM=rpi3 toolchains
+make -C laboratorio/optee/build PLATFORM=rpi3 all
+# (la imagen de la Pi queda en laboratorio/optee/out-br/images/)
+
+# 3. Grabar la imagen en la SD, arrancar la Pi y confirmar que tee-supplicant corre
+ssh root@raspberrypi.local "ps aux | grep tee-supplicant"
+
+# 4. Desplegar las cinco TAs y CAs en la Pi
+./scripts/deploy_to_rpi3.sh
+
+# 5. Ejecutar las cinco campañas de medición
+./scripts/run_rpi3_all.sh
+
+# 6. Ver el resumen agregado
+cat documentacion/resultados/optee_rpi3_summary_latest.md
+```
+
+Para medir un solo algoritmo en QEMU sin necesidad de la Pi:
+
+```bash
+# Compilar para QEMU
+source lab/run-pathfixes.sh
+make -C laboratorio/optee/build PLATFORM=qemu_v8 toolchains
+make -C laboratorio/optee/build PLATFORM=qemu_v8 all
+
+# Medir ML-DSA-65
+./scripts/run_qemu_ml_dsa.sh
+cat documentacion/resultados/optee_ml_dsa_qemu_latest.md
+```
+
+Si la Pi tiene una IP distinta a `raspberrypi.local`:
+
+```bash
+export RPI_HOST=192.168.1.50
+./scripts/deploy_to_rpi3.sh
+./scripts/run_rpi3_all.sh
+```
+
+---
+
 ## Ejecución de mediciones
 
 ### Campañas en QEMU
