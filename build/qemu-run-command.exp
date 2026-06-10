@@ -1,0 +1,92 @@
+#!/usr/bin/expect -f
+#
+# Boot QEMU/OP-TEE using the same non-interactive serial setup as qemu-check
+# and execute a single command in the guest as root.
+
+set quiet 0
+set timeout 300
+set cmd ""
+
+set myargs $argv
+while {[llength $myargs]} {
+	set myargs [lassign $myargs arg]
+	switch -exact -- $arg {
+		"--command" { set myargs [lassign $myargs ::cmd] }
+		"--timeout" { set myargs [lassign $myargs ::timeout] }
+		"-q" { set ::quiet 1 }
+		default {
+			puts stderr "Unsupported option: $arg"
+			exit 2
+		}
+	}
+}
+
+if {$cmd == ""} {
+	puts stderr "Missing --command"
+	exit 2
+}
+
+proc info arg {
+	if {$::quiet == 1} { return }
+	puts -nonewline $arg
+	flush stdout
+}
+
+proc fail_with_message {msg code} {
+	info "$msg\n"
+	exit $code
+}
+
+log_user 0
+log_file -a -noappend "serial0.log"
+open "serial1.log" "w+"
+spawn -open [open "|tail -f serial1.log"]
+set teecore $spawn_id
+
+spawn sh -c "$::env(QEMU) $::env(QEMU_RUN_CMD_ARGS)"
+
+expect_before -i $teecore -re {(..TC:[^\n]*assertion[^\n]*failed at[^\n]*)} {
+	fail_with_message "Secure World assertion: $expect_out(1,string)" 1
+}
+expect_before -i $teecore -re {(..TC:[^\n]*Panic at[^\n]*)} {
+	fail_with_message "Secure World panic: $expect_out(1,string)" 1
+}
+
+info "Starting QEMU...\n"
+expect {
+	"Kernel panic" {
+		fail_with_message "Kernel panic during boot" 1
+	}
+	timeout {
+		fail_with_message "Timeout waiting for guest login" 1
+	}
+	"ogin:"
+}
+
+send -- "root\r\r"
+expect "# "
+info "Guest booted.\n"
+
+send -- "export LD_LIBRARY_PATH=/lib:/lib/arm-linux-gnueabihf\r"
+expect "# "
+
+send -- "$cmd; rc=\$?; printf \"\\n__CODEX_EXIT__:%s\\n\" \"\$rc\"\r"
+
+set rc 255
+expect {
+	-re {__CODEX_EXIT__:([0-9]+)} {
+		set rc $expect_out(1,string)
+	}
+	timeout {
+		fail_with_message "Timeout waiting for command completion" 2
+	}
+}
+
+expect "# "
+info "Command exit code: $rc\n"
+send -- "poweroff -f\r"
+expect {
+	eof {}
+	timeout {}
+}
+exit $rc
