@@ -5,10 +5,10 @@
 
 set -euo pipefail
 
-RPI_HOST="${RPI_HOST:-192.168.18.223}"
+RPI_HOST="${RPI_HOST:-raspberrypi.local}"
 RPI_USER="${RPI_USER:-root}"
 RPI_PASS="${RPI_PASS:-root}"
-OPTEE="${OPTEE:-/home/goncho/Escritorio/CUARTO/TFG/laboratorio/optee}"
+OPTEE="${OPTEE:-$(cd "$(dirname "$0")/../laboratorio/optee" && pwd)}"
 EXAMPLES="$OPTEE/optee_examples"
 
 SSH="sshpass -p $RPI_PASS ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 ${RPI_USER}@${RPI_HOST}"

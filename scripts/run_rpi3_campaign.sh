@@ -13,7 +13,7 @@ case "$ALGO" in
 	*) echo "Uso: $0 <ml_dsa|ml_kem|ecdsa|hawk|mayo>" >&2; exit 1 ;;
 esac
 
-RPI_HOST="${RPI_HOST:-192.168.18.223}"
+RPI_HOST="${RPI_HOST:-raspberrypi.local}"
 RPI_USER="${RPI_USER:-root}"
 RPI_PASS="${RPI_PASS:-root}"
 INTERVAL="${MEMINFO_INTERVAL:-0.1}"

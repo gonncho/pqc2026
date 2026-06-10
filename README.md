@@ -165,7 +165,7 @@ python3 scripts/summarize_qemu_results.py
 ### Campañas en Raspberry Pi 3
 
 ```bash
-# Parámetros de conexión (por defecto 192.168.18.223, root/root)
+# Parámetros de conexión (por defecto raspberrypi.local, root/root)
 export RPI_HOST=192.168.x.x
 export RPI_USER=root
 export RPI_PASS=root
