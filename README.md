@@ -245,6 +245,4 @@ Los scripts y TAs desarrollados para este proyecto se distribuyen bajo la licenc
 
 ## Contacto
 
-Gonzalo Vicente Pérez  
-Universidad de Murcia, Departamento de Ingeniería de la Información y las Comunicaciones  
-goncho303@gmail.com
+Gonzalo Vicente Pérez - gonzalo.vicentep@um.es
